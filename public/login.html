@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login Facial Inteligente — BioHealth Labs</title>
+  
+  <!-- CSS Stylesheets -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="/css/asimov-tokens.css">
+  <link rel="stylesheet" href="/css/clinical-theme.css">
+  <link rel="stylesheet" href="/css/scanner-hud.css">
+  
+  <!-- Bootstrap Icons -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+</head>
+<body>
+
+  <!-- Top Navbar -->
+  <header class="biohealth-navbar">
+    <div class="container-fluid d-flex align-items-center justify-content-between">
+      <a href="/" class="d-flex align-items-center gap-2 text-decoration-none">
+        <div class="pulsing-dot text-success"></div>
+        <span class="brand-title fs-4">BioHealth <span style="font-family: var(--font-sans); font-size: 0.85rem; color: var(--asimov-accent-light); font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; border: 1px solid rgba(20, 184, 166, 0.4); padding: 2px 8px; border-radius: 4px; vertical-align: middle;">Labs Security</span></span>
+      </a>
+
+      <nav class="d-flex align-items-center gap-2">
+        <a href="/" class="nav-link-custom"><i class="bi bi-shield-check me-1"></i> Início</a>
+        <a href="/cadastro" class="nav-link-custom"><i class="bi bi-person-plus me-1"></i> Cadastrar Face</a>
+        <a href="/login" class="nav-link-custom active"><i class="bi bi-camera-video me-1"></i> Login Facial</a>
+        <a href="/dashboard" class="nav-link-custom"><i class="bi bi-lock-fill me-1"></i> Painel Secreto</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="container py-4 flex-grow-1">
+    <div class="row g-4 align-items-center justify-content-center">
+      
+      <!-- Center Scanner Column -->
+      <div class="col-lg-8">
+        <div class="card-glass p-4 position-relative overflow-hidden">
+          
+          <!-- Header of scanner -->
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <div>
+              <span class="badge-status badge-status-biometric mb-1">
+                <i class="bi bi-shield-lock-fill"></i> Controle de Acesso Passwordless
+              </span>
+              <h3 class="m-0 text-white font-serif fs-2">Terminal de Reconhecimento Facial</h3>
+            </div>
+
+            <div class="d-flex gap-2 align-items-center">
+              <span id="login-status-badge" class="badge-status badge-status-warning">
+                <span class="pulsing-dot"></span> Carregando Sistema...
+              </span>
+            </div>
+          </div>
+
+          <!-- Camera HUD Container -->
+          <div id="camera-box" class="camera-container scanning mb-3">
+            <video id="webcam" class="camera-video" playsinline muted></video>
+            <canvas id="overlay-canvas" class="camera-canvas"></canvas>
+            
+            <!-- HUD Overlays -->
+            <div class="hud-overlay">
+              <div class="hud-corner hud-corner-tl"></div>
+              <div class="hud-corner hud-corner-tr"></div>
+              <div class="hud-corner hud-corner-bl"></div>
+              <div class="hud-corner hud-corner-br"></div>
+              <div class="hud-scanline"></div>
+
+              <!-- Liveness Notification Prompt -->
+              <div id="hud-liveness" class="hud-liveness-prompt">
+                <i class="bi bi-eye-fill"></i>
+                <span id="liveness-msg">Aguardando enquadramento do rosto...</span>
+              </div>
+
+              <!-- Loading overlay -->
+              <div id="loading-overlay" class="hud-loader">
+                <div class="hud-spinner"></div>
+                <div id="loading-text" class="text-white fw-semibold small">Inicializando Modelos Neurais...</div>
+              </div>
+
+              <!-- Telemetry Bar -->
+              <div class="hud-telemetry">
+                <span id="telemetry-match"><i class="bi bi-person-bounding-box"></i> Match: Buscando...</span>
+                <span id="telemetry-distance"><i class="bi bi-rulers"></i> Distância: --</span>
+                <span id="telemetry-liveness"><i class="bi bi-heart-pulse"></i> Vivacidade: Pendente</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Control Bar & Demonstration Tools -->
+          <div class="row g-2 align-items-center">
+            <div class="col-md-7">
+              <div class="d-flex align-items-center gap-2">
+                <div class="form-check form-switch m-0">
+                  <input class="form-check-input form-check-input-custom" type="checkbox" id="switch-auto-login" checked>
+                  <label class="form-check-label text-light small ms-1" for="switch-auto-login">
+                    <strong>Auto-Login Instantâneo</strong> (libera ao confirmar rosto + vivacidade)
+                  </label>
+                </div>
+              </div>
+            </div>
+
+            <div class="col-md-5 d-flex justify-content-end gap-2">
+              <button id="btn-manual-verify" class="btn-asimov-primary btn-sm flex-grow-1">
+                <i class="bi bi-fingerprint"></i> Autenticar Agora
+              </button>
+              <button id="btn-retest" class="btn-asimov-outline btn-sm" title="Reiniciar Câmera">
+                <i class="bi bi-arrow-clockwise"></i>
+              </button>
+            </div>
+          </div>
+
+          <!-- Anti-Spoofing Pitch Banner (Demonstração para a Turma) -->
+          <div class="mt-4 pt-3 border-top border-secondary border-opacity-25">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+              <span class="text-muted small fw-semibold text-uppercase">
+                <i class="bi bi-shield-exclamation text-warning"></i> Painel de Demonstração de Segurança & Anti-Spoofing
+              </span>
+              <span class="badge-status badge-status-active small">Mecanismo Ativo</span>
+            </div>
+            
+            <p class="text-secondary small mb-3">
+              O sistema utiliza análise de <em>Eye Aspect Ratio (EAR)</em> e micro-movimentos fisiológicos para validar que você é um humano real diante da câmera e não uma <strong>foto impressa</strong> ou <strong>vídeo em smartphone</strong>.
+            </p>
+
+            <div class="d-flex gap-2">
+              <button id="btn-test-spoof" class="btn btn-outline-danger btn-sm">
+                <i class="bi bi-card-image"></i> Simular Ataque de Foto Estática (Spoofing)
+              </button>
+              <button id="btn-reset-liveness" class="btn btn-outline-secondary btn-sm">
+                <i class="bi bi-arrow-counterclockwise"></i> Resetar Prova de Vida
+              </button>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- Access Granted Overlay / Animation Modal -->
+  <div class="modal fade" id="grantedModal" tabindex="-1" data-bs-backdrop="static" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content card-glass border-teal p-3">
+        <div class="modal-body text-center p-4">
+          <div style="width: 70px; height: 70px; background: rgba(16, 185, 129, 0.2); border: 2px solid #10b981; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem auto; box-shadow: 0 0 30px rgba(16, 185, 129, 0.5);">
+            <i class="bi bi-unlock-fill text-success fs-1"></i>
+          </div>
+
+          <span class="badge-status badge-status-active mb-2">Acesso Autorizado</span>
+          <h3 id="granted-user-name" class="text-white font-serif mb-1">Dr. Identificado</h3>
+          <div id="granted-user-role" class="text-secondary small mb-3">Pesquisador Clínico • BioHealth Labs</div>
+          
+          <div class="p-3 card-glass-subtle mb-4 text-start font-mono small">
+            <div class="d-flex justify-content-between mb-1">
+              <span class="text-muted">Nível de Confiança:</span>
+              <span id="granted-confidence" class="text-success fw-bold">98.5%</span>
+            </div>
+            <div class="d-flex justify-content-between mb-1">
+              <span class="text-muted">Distância Euclidiana:</span>
+              <span id="granted-distance" class="text-info">0.3120</span>
+            </div>
+            <div class="d-flex justify-content-between">
+              <span class="text-muted">Prova de Vida:</span>
+              <span class="text-success">✓ APROVADA (EAR 0.31)</span>
+            </div>
+          </div>
+
+          <div class="text-secondary small mb-3">
+            <span class="spinner-border spinner-border-sm text-info me-2"></span>
+            Redirecionando para o <strong>Painel Secreto</strong> em instantes...
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="/js/lib/face-api.js"></script>
+  <script src="/js/modules/api.service.js"></script>
+  <script src="/js/modules/camera.manager.js"></script>
+  <script src="/js/modules/face.detector.js"></script>
+  <script src="/js/modules/liveness.detector.js"></script>
+  <script src="/js/modules/hud.renderer.js"></script>
+  <script src="/js/pages/login.page.js"></script>
+</body>
+</html>
