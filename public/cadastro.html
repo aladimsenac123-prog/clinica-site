@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Cadastro Biométrico Facial — BioHealth Labs</title>
+  <title>Cadastro de Biometria Facial — BioHealth Labs</title>
   
   <!-- CSS Stylesheets -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -16,20 +16,26 @@
 </head>
 <body>
 
-  <!-- Top Navbar -->
+  <!-- Responsive Navbar -->
   <header class="biohealth-navbar">
     <div class="container-fluid d-flex align-items-center justify-content-between">
       <a href="/" class="d-flex align-items-center gap-2 text-decoration-none">
         <div class="pulsing-dot text-success"></div>
-        <span class="brand-title fs-4">BioHealth <span style="font-family: var(--font-sans); font-size: 0.85rem; color: var(--asimov-accent-light); font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; border: 1px solid rgba(20, 184, 166, 0.4); padding: 2px 8px; border-radius: 4px; vertical-align: middle;">Labs Security</span></span>
+        <span class="brand-title fs-4">BioHealth <span style="font-family: var(--font-sans); font-size: 0.75rem; color: var(--asimov-accent-light); font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; border: 1px solid rgba(20, 184, 166, 0.4); padding: 2px 8px; border-radius: 4px; vertical-align: middle;">Security ID</span></span>
       </a>
 
-      <nav class="d-flex align-items-center gap-2">
-        <a href="/" class="nav-link-custom"><i class="bi bi-shield-check me-1"></i> Início</a>
-        <a href="/cadastro" class="nav-link-custom active"><i class="bi bi-person-plus me-1"></i> Cadastrar Face</a>
-        <a href="/login" class="nav-link-custom"><i class="bi bi-camera-video me-1"></i> Login Facial</a>
-        <a href="/dashboard" class="nav-link-custom"><i class="bi bi-lock-fill me-1"></i> Painel Secreto</a>
-      </nav>
+      <button class="navbar-toggler d-lg-none text-light border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navContent" aria-controls="navContent" aria-expanded="false" aria-label="Menu">
+        <i class="bi bi-list fs-2 text-accent"></i>
+      </button>
+
+      <div class="collapse navbar-collapse d-lg-flex justify-content-end" id="navContent">
+        <nav class="d-flex flex-column flex-lg-row align-items-stretch align-items-lg-center gap-2 mt-3 mt-lg-0">
+          <a href="/" class="nav-link-custom"><i class="bi bi-shield-check me-1"></i> Início</a>
+          <a href="/cadastro" class="nav-link-custom active"><i class="bi bi-person-plus me-1"></i> Cadastrar Face</a>
+          <a href="/login" class="nav-link-custom"><i class="bi bi-camera-video me-1"></i> Login Facial</a>
+          <a href="/dashboard" class="nav-link-custom"><i class="bi bi-lock-fill me-1"></i> Painel Restrito</a>
+        </nav>
+      </div>
     </div>
   </header>
 
@@ -43,11 +49,11 @@
           
           <div class="d-flex justify-content-between align-items-center mb-3">
             <div>
-              <h5 class="m-0 text-white font-serif fs-4">Captura de Biometria Facial</h5>
-              <div class="text-secondary small">Posicione seu rosto dentro da moldura do scanner</div>
+              <h5 class="m-0 text-white font-serif fs-4">Sensor de Biometria Facial</h5>
+              <div class="text-secondary small">Centralize o rosto no enquadramento do visor</div>
             </div>
             <span id="camera-status-badge" class="badge-status badge-status-warning">
-              <span class="pulsing-dot"></span> Inicializando Câmera...
+              <span class="pulsing-dot"></span> Conectando Sensor...
             </span>
           </div>
 
@@ -67,13 +73,13 @@
               <!-- Loading overlay -->
               <div id="loading-overlay" class="hud-loader">
                 <div class="hud-spinner"></div>
-                <div id="loading-text" class="text-white fw-semibold small">Carregando Redes Neurais...</div>
+                <div id="loading-text" class="text-white fw-semibold small">Sincronizando Sistema de Biometria...</div>
               </div>
 
               <!-- Telemetry -->
               <div class="hud-telemetry">
                 <span id="telemetry-landmarks"><i class="bi bi-diagram-3"></i> Marcos: 0/68</span>
-                <span id="telemetry-confidence"><i class="bi bi-activity"></i> Confiança: 0%</span>
+                <span id="telemetry-confidence"><i class="bi bi-activity"></i> Precisão: 0%</span>
                 <span id="telemetry-fps"><i class="bi bi-speedometer2"></i> 30 FPS</span>
               </div>
             </div>
@@ -82,9 +88,9 @@
           <!-- Camera Controls -->
           <div class="d-flex gap-2 mt-3">
             <button id="btn-capture" class="btn-asimov-primary flex-grow-1" disabled>
-              <i class="bi bi-camera-fill"></i> Extrair Biometria do Rosto
+              <i class="bi bi-camera-fill"></i> Capturar Biometria
             </button>
-            <button id="btn-retest-camera" class="btn-asimov-outline" title="Reiniciar Câmera">
+            <button id="btn-retest-camera" class="btn-asimov-outline" title="Reiniciar Sensor">
               <i class="bi bi-arrow-clockwise"></i>
             </button>
           </div>
@@ -97,8 +103,8 @@
         <div class="card-glass p-4">
           
           <div class="mb-4">
-            <h4 class="m-0 text-white font-serif fs-3">Dados do Profissional de Saúde</h4>
-            <div class="text-secondary small">Vincule seus dados cadastrais ao seu descritor biométrico</div>
+            <h4 class="m-0 text-white font-serif fs-3">Dados Cadastrais do Colaborador</h4>
+            <div class="text-secondary small">Vincule suas informações funcionais à sua chave biométrica</div>
           </div>
 
           <form id="form-cadastro">
@@ -120,13 +126,13 @@
                 </div>
               </div>
               <div class="col-md-6">
-                <label for="input-role" class="form-label text-light small fw-semibold">Cargo / Função *</label>
-                <input type="text" class="form-control form-control-custom" id="input-role" placeholder="Ex: Bioquímico Sênior" required>
+                <label for="input-role" class="form-label text-light small fw-semibold">Cargo / Especialidade *</label>
+                <input type="text" class="form-control form-control-custom" id="input-role" placeholder="Ex: Bioquímica Sênior" required>
               </div>
             </div>
 
             <div class="mb-3">
-              <label for="input-dept" class="form-label text-light small fw-semibold">Departamento</label>
+              <label for="input-dept" class="form-label text-light small fw-semibold">Departamento / Unidade</label>
               <select class="form-control form-control-custom" id="input-dept">
                 <option value="Pesquisa Clínica & Ensaio Fármacos">Pesquisa Clínica & Ensaio Fármacos</option>
                 <option value="Genômica & Sequenciamento Molecular">Genômica & Sequenciamento Molecular</option>
@@ -139,24 +145,24 @@
             <!-- Biometric Extraction Status Pill -->
             <div class="mb-3 p-3 card-glass-subtle d-flex align-items-center justify-content-between">
               <div>
-                <div class="text-white small fw-semibold">Status da Extração Biométrica</div>
-                <div id="extraction-status-text" class="text-muted small">Nenhum rosto capturado ainda</div>
+                <div class="text-white small fw-semibold">Chave Biométrica (Vetor 128D)</div>
+                <div id="extraction-status-text" class="text-muted small">Aguardando captura facial</div>
               </div>
-              <span id="extraction-status-badge" class="badge-status badge-status-warning">Pendente</span>
+              <span id="extraction-status-badge" class="badge-status badge-status-warning">Não Registrado</span>
             </div>
 
             <!-- LGPD Term of Use (Mandatory Requirement) -->
             <div class="mb-3">
               <label class="form-label text-light small fw-semibold d-flex align-items-center gap-1">
-                <i class="bi bi-shield-lock-fill text-info"></i> Termo de Uso e Proteção de Dados (LGPD)
+                <i class="bi bi-shield-lock-fill text-info"></i> Termos de Uso e Proteção de Dados (LGPD)
               </label>
               <div class="lgpd-box">
                 <p class="mb-2"><strong>Aviso de Privacidade e Tratamento de Dados Biométricos:</strong></p>
                 <p class="mb-2">
-                  Em conformidade com a <strong>Lei Geral de Proteção de Dados (Lei nº 13.709/2018 - Art. 11, II, "g")</strong>, informamos que este sistema coleta exclusivamente os pontos biométricos faciais para finalidade estrita de autenticação e segurança de controle de acesso ao laboratório.
+                  Em estrita conformidade com a <strong>Lei Geral de Proteção de Dados (Lei nº 13.709/2018 - Art. 11, II, "g")</strong>, informamos que este sistema processa exclusivamente pontos biométricos faciais para finalidade exclusiva de autenticação e controle de acesso a áreas laboratoriais restritas.
                 </p>
                 <p class="mb-0">
-                  🔒 <strong>Garantia de Privacidade:</strong> Sua fotografia <strong>não</strong> é gravada nem armazenada no banco de dados. O sistema calcula apenas um vetor matemático unidirecional criptografado de 128 números decimais (impossível de ser revertido na sua imagem facial). Você pode solicitar a exclusão definitiva do seu cadastro a qualquer momento.
+                  🔒 <strong>Garantia de Privacidade por Design:</strong> Nenhuma fotografia é gravada ou transmitida. O sistema gera apenas um código matemático unidirecional de 128 posições decimais criptografadas, impossível de ser convertido de volta em imagem do rosto.
                 </p>
               </div>
             </div>
@@ -165,13 +171,13 @@
             <div class="form-check mb-4">
               <input class="form-check-input form-check-input-custom" type="checkbox" id="check-consent" required>
               <label class="form-check-label text-light small ms-2" for="check-consent">
-                Li, compreendo e <strong>autorizo</strong> o tratamento dos meus pontos biométricos estritamente para autenticação de acesso nesta instituição.
+                Li, compreendo e <strong>autorizo</strong> o registro dos meus pontos biométricos exclusivamente para autenticação de acesso nesta instituição.
               </label>
             </div>
 
             <!-- Submit Button -->
             <button type="submit" id="btn-submit" class="btn-asimov-primary w-100 btn-lg" disabled>
-              <i class="bi bi-check2-circle"></i> Finalizar Cadastro Biométrico
+              <i class="bi bi-check2-circle"></i> Concluir Registro Biométrico
             </button>
 
           </form>
@@ -188,11 +194,11 @@
       <div class="modal-content card-glass border-teal">
         <div class="modal-body text-center p-4">
           <div class="pulsing-dot text-success mx-auto mb-3" style="width: 16px; height: 16px;"></div>
-          <h4 class="text-white font-serif mb-2">Cadastro Concluído com Sucesso!</h4>
+          <h4 class="text-white font-serif mb-2">Credencial Registrada com Sucesso</h4>
           <p id="modal-success-msg" class="text-secondary small mb-4">Seus dados biométricos foram registrados de forma segura.</p>
           <div class="d-flex gap-2 justify-content-center">
             <a href="/login" class="btn-asimov-primary">
-              <i class="bi bi-camera-video"></i> Ir para o Login Facial
+              <i class="bi bi-camera-video"></i> Ir para o Terminal Facial
             </a>
             <button type="button" class="btn-asimov-outline" data-bs-dismiss="modal">Novo Cadastro</button>
           </div>
@@ -201,9 +207,22 @@
     </div>
   </div>
 
+  <!-- Corporate Professional Footer -->
+  <footer class="biohealth-footer text-center">
+    <div class="container">
+      <div class="mb-1 text-secondary">BioHealth Research Labs &copy; 2026 — Divisão de Biossegurança e Controle de Acesso Restrito</div>
+      <div class="text-muted small">Todos os direitos reservados • Sistema certificado sob as diretrizes da LGPD (Lei nº 13.709/2018)</div>
+    </div>
+  </footer>
+
   <!-- Scripts -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
   <script src="/js/lib/face-api.js"></script>
+  <script>
+    if (typeof faceapi === 'undefined') {
+      document.write('<script src="https://cdn.jsdelivr.net/npm/@vladmandic/face-api/dist/face-api.js"><\/script>');
+    }
+  </script>
   <script src="/js/modules/api.service.js"></script>
   <script src="/js/modules/camera.manager.js"></script>
   <script src="/js/modules/face.detector.js"></script>

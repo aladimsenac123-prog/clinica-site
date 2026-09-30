@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Painel Secreto de Pesquisas Clínicas — BioHealth Labs</title>
+  <title>Painel Restrito de Pesquisas Clínicas — BioHealth Labs</title>
   
   <!-- CSS Stylesheets -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -16,12 +16,12 @@
 </head>
 <body>
 
-  <!-- Top Navbar -->
+  <!-- Responsive Navbar -->
   <header class="biohealth-navbar">
     <div class="container-fluid d-flex align-items-center justify-content-between">
       <a href="/" class="d-flex align-items-center gap-2 text-decoration-none">
         <div class="pulsing-dot text-danger" style="box-shadow: 0 0 10px #ef4444;"></div>
-        <span class="brand-title fs-4">BioHealth <span style="font-family: var(--font-sans); font-size: 0.85rem; color: #f87171; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; border: 1px solid rgba(239, 68, 68, 0.4); padding: 2px 8px; border-radius: 4px; vertical-align: middle;">Restricted Access</span></span>
+        <span class="brand-title fs-4">BioHealth <span style="font-family: var(--font-sans); font-size: 0.75rem; color: #f87171; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; border: 1px solid rgba(239, 68, 68, 0.4); padding: 2px 8px; border-radius: 4px; vertical-align: middle;">Restricted Access</span></span>
       </a>
 
       <div class="d-flex align-items-center gap-3">
@@ -38,29 +38,29 @@
   </header>
 
   <!-- Main Content -->
-  <main class="container-fluid px-lg-5 py-4 flex-grow-1">
+  <main class="container-fluid px-3 px-lg-5 py-4 flex-grow-1">
     
     <!-- User Welcome Banner -->
-    <div class="card-glass p-4 mb-4 position-relative overflow-hidden">
+    <div class="card-glass p-3 p-sm-4 mb-4 position-relative overflow-hidden">
       <div style="position: absolute; top: -40px; right: -40px; width: 220px; height: 220px; background: rgba(20, 184, 166, 0.15); filter: blur(70px); border-radius: 50%; pointer-events: none;"></div>
 
       <div class="row align-items-center g-3">
         <div class="col-md-8">
-          <div class="d-flex align-items-center gap-2 mb-2">
+          <div class="d-flex align-items-center gap-2 mb-2 flex-wrap">
             <span class="badge-status badge-status-biometric">Nível de Acesso 4 (Máxima Segurança)</span>
             <span id="user-badge-tag" class="badge-status badge-status-active">BIO-0000</span>
           </div>
-          <h2 class="text-white font-serif m-0 fs-1">
-            Painel Confidencial: <span id="user-display-name" style="color: var(--asimov-accent-glow);">Carregando Usuário...</span>
+          <h2 class="text-white font-serif m-0 fs-2 fs-md-1">
+            Painel Confidencial: <span id="user-display-name" style="color: var(--asimov-accent-glow);">Carregando Sessão...</span>
           </h2>
           <div id="user-display-role" class="text-secondary small mt-1">
-            Pesquisador(a) Clínico(a) • Departamento de Genômica e Fármacos
+            Pesquisador(a) Clínico(a) • Divisão de Genômica e Fármacos
           </div>
         </div>
 
         <div class="col-md-4 text-md-end">
           <div class="p-3 card-glass-subtle d-inline-block text-start">
-            <div class="text-muted small">Taxa de Confiança Biometria</div>
+            <div class="text-muted small">Índice de Precisão Biometria</div>
             <div class="text-success font-mono fs-4 fw-bold" id="user-display-confidence">98.8% <span class="fs-6 text-muted font-sans fw-normal">(128D Match)</span></div>
           </div>
         </div>
@@ -69,32 +69,32 @@
 
     <!-- Telemetry Cards -->
     <div class="row g-3 mb-4">
-      <div class="col-md-3">
-        <div class="card-glass p-3">
+      <div class="col-6 col-md-3">
+        <div class="card-glass p-3 h-100">
           <div class="text-muted small text-uppercase fw-semibold mb-1"><i class="bi bi-snow text-info"></i> Câmaras Criogênicas</div>
-          <div class="text-white font-mono fs-4 fw-bold" id="stat-cryo">12/12 Operacionais</div>
-          <div class="text-success small">Temperatura estável a -196°C</div>
+          <div class="text-white font-mono fs-5 fs-md-4 fw-bold" id="stat-cryo">12/12 Ativas</div>
+          <div class="text-success small">-196°C Estável</div>
         </div>
       </div>
-      <div class="col-md-3">
-        <div class="card-glass p-3">
-          <div class="text-muted small text-uppercase fw-semibold mb-1"><i class="bi bi-cpu text-accent"></i> Sequenciadores HiSeq</div>
-          <div class="text-white font-mono fs-4 fw-bold" id="stat-seq">4/4 Ativos</div>
-          <div class="text-info small">Processamento genômico contínuo</div>
+      <div class="col-6 col-md-3">
+        <div class="card-glass p-3 h-100">
+          <div class="text-muted small text-uppercase fw-semibold mb-1"><i class="bi bi-cpu text-accent"></i> Sequenciadores</div>
+          <div class="text-white font-mono fs-5 fs-md-4 fw-bold" id="stat-seq">4/4 HiSeq</div>
+          <div class="text-info small">Em processamento</div>
         </div>
       </div>
-      <div class="col-md-3">
-        <div class="card-glass p-3">
-          <div class="text-muted small text-uppercase fw-semibold mb-1"><i class="bi bi-shield-check text-success"></i> Acessos Biométricos Hoje</div>
-          <div class="text-white font-mono fs-4 fw-bold" id="stat-access">28 Registrados</div>
-          <div class="text-success small">Nenhum desvio detectado</div>
+      <div class="col-6 col-md-3">
+        <div class="card-glass p-3 h-100">
+          <div class="text-muted small text-uppercase fw-semibold mb-1"><i class="bi bi-shield-check text-success"></i> Acessos Biométricos</div>
+          <div class="text-white font-mono fs-5 fs-md-4 fw-bold" id="stat-access">28 Registros</div>
+          <div class="text-success small">Conformidade total</div>
         </div>
       </div>
-      <div class="col-md-3">
-        <div class="card-glass p-3">
-          <div class="text-muted small text-uppercase fw-semibold mb-1"><i class="bi bi-shield-slash text-danger"></i> Fraudes/Spoofings Barrados</div>
-          <div class="text-white font-mono fs-4 fw-bold text-danger" id="stat-breaches">0 Tentativas</div>
-          <div class="text-muted small">Proteção ativa por Liveness Detection</div>
+      <div class="col-6 col-md-3">
+        <div class="card-glass p-3 h-100">
+          <div class="text-muted small text-uppercase fw-semibold mb-1"><i class="bi bi-shield-slash text-danger"></i> Fraudes Barradas</div>
+          <div class="text-white font-mono fs-5 fs-md-4 fw-bold text-danger" id="stat-breaches">0 Tentativas</div>
+          <div class="text-muted small">Proteção Ativa</div>
         </div>
       </div>
     </div>
@@ -103,7 +103,7 @@
       
       <!-- Active Clinical Trials Column -->
       <div class="col-lg-7">
-        <div class="card-glass p-4 h-100">
+        <div class="card-glass p-3 p-sm-4 h-100">
           <div class="d-flex justify-content-between align-items-center mb-3">
             <div>
               <h5 class="m-0 text-white font-serif fs-3">Ensaios Clínicos Confidenciais</h5>
@@ -120,10 +120,10 @@
 
       <!-- Real-Time Biometric Audit Trail (LGPD & Security Requirement) -->
       <div class="col-lg-5">
-        <div class="card-glass p-4 h-100 d-flex flex-column">
+        <div class="card-glass p-3 p-sm-4 h-100 d-flex flex-column">
           <div class="d-flex justify-content-between align-items-center mb-3">
             <div>
-              <h5 class="m-0 text-white font-serif fs-3">Log de Auditoria Biometria</h5>
+              <h5 class="m-0 text-white font-serif fs-3">Log de Auditoria</h5>
               <div class="text-secondary small">Rastreabilidade em conformidade com a LGPD</div>
             </div>
             <button id="btn-refresh-logs" class="btn btn-outline-secondary btn-sm" title="Atualizar Logs">
@@ -138,7 +138,7 @@
           </div>
 
           <!-- LGPD Right to Erasure Action -->
-          <div class="mt-3 pt-3 border-top border-secondary border-opacity-25 d-flex justify-content-between align-items-center">
+          <div class="mt-3 pt-3 border-top border-secondary border-opacity-25 d-flex justify-content-between align-items-center flex-wrap gap-2">
             <span class="text-muted small"><i class="bi bi-shield-shaded"></i> Direitos do Titular (LGPD Art. 18)</span>
             <button id="btn-delete-my-data" class="btn btn-outline-warning btn-sm">
               <i class="bi bi-trash3"></i> Excluir Minha Biometria
@@ -152,10 +152,11 @@
 
   </main>
 
-  <!-- Footer -->
+  <!-- Corporate Professional Footer -->
   <footer class="biohealth-footer text-center">
     <div class="container">
-      <div>BioHealth Research Labs &copy; 2026 — Área Confidencial Restrita a Pessoal Autorizado</div>
+      <div class="mb-1 text-secondary">BioHealth Research Labs &copy; 2026 — Divisão de Biossegurança e Controle de Acesso Restrito</div>
+      <div class="text-muted small">Área restrita a pessoal autorizado • Todos os acessos são auditados</div>
     </div>
   </footer>
 

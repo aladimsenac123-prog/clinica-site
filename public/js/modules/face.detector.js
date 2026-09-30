@@ -1,27 +1,36 @@
 /**
- * Face Detection & Biometrics Engine (face-api.js wrapper)
+ * BioHealth Biometrics Engine (face-api.js wrapper)
  */
-class FaceDetectorEngine {
-  constructor() {
-    this.modelsLoaded = false;
-    this.modelsPath = '/models';
-    this.detectorOptions = null;
-  }
+const FaceDetectorEngine = {
+  modelsLoaded: false,
+  modelsPath: '/models',
+  detectorOptions: null,
 
   /**
-   * Pre-loads the neural network weights
+   * Pre-loads the neural network weights from local assets with CDN fallback
    */
   async loadModels(onProgress = null) {
     if (this.modelsLoaded) return true;
 
+    // Wait for faceapi global if still initializing
+    let attempts = 0;
+    while (typeof faceapi === 'undefined' && attempts < 20) {
+      await new Promise(r => setTimeout(r, 100));
+      attempts++;
+    }
+
+    if (typeof faceapi === 'undefined') {
+      throw new Error('A biblioteca face-api não foi detectada. Verifique sua conexão ou recarregue a página.');
+    }
+
     try {
-      if (onProgress) onProgress('Carregando detector neural SSD MobileNet...');
+      if (onProgress) onProgress('Carregando detector neural facial...');
       await faceapi.nets.ssdMobilenetv1.loadFromUri(this.modelsPath);
 
-      if (onProgress) onProgress('Carregando mapeador de 68 marcos anatômicos...');
+      if (onProgress) onProgress('Carregando mapeador de marcos anatômicos...');
       await faceapi.nets.faceLandmark68Net.loadFromUri(this.modelsPath);
 
-      if (onProgress) onProgress('Carregando extrator de embeddings biométricos (128D)...');
+      if (onProgress) onProgress('Carregando extrator biométrico 128D...');
       await faceapi.nets.faceRecognitionNet.loadFromUri(this.modelsPath);
 
       this.detectorOptions = new faceapi.SsdMobilenetv1Options({ minConfidence: 0.5 });
@@ -29,10 +38,24 @@ class FaceDetectorEngine {
       if (onProgress) onProgress('Modelos neurais prontos.');
       return true;
     } catch (err) {
-      console.error('[FaceDetectorEngine] Error loading models:', err);
-      throw new Error(`Falha ao carregar modelos neurais: ${err.message}`);
+      console.warn('[FaceDetectorEngine] Erro carregando modelos locais, tentando fallback CDN...', err);
+      try {
+        if (onProgress) onProgress('Sincronizando modelos de alta precisão...');
+        const cdnBase = 'https://raw.githubusercontent.com/vladmandic/face-api/master/model';
+        await faceapi.nets.ssdMobilenetv1.loadFromUri(cdnBase);
+        await faceapi.nets.faceLandmark68Net.loadFromUri(cdnBase);
+        await faceapi.nets.faceRecognitionNet.loadFromUri(cdnBase);
+
+        this.detectorOptions = new faceapi.SsdMobilenetv1Options({ minConfidence: 0.5 });
+        this.modelsLoaded = true;
+        if (onProgress) onProgress('Modelos neurais prontos via rede segura.');
+        return true;
+      } catch (cdnErr) {
+        console.error('[FaceDetectorEngine] Falha geral no carregamento:', cdnErr);
+        throw new Error(`Falha ao inicializar modelos biométricos: ${err.message}`);
+      }
     }
-  }
+  },
 
   /**
    * Detects a single face and extracts bounding box, landmarks and descriptor
@@ -47,7 +70,7 @@ class FaceDetectorEngine {
       .withFaceDescriptor();
 
     return detection;
-  }
+  },
 
   /**
    * Extracts raw descriptor array (Array of 128 numbers) from detection
@@ -58,6 +81,7 @@ class FaceDetectorEngine {
     if (!detection || !detection.descriptor) return null;
     return Array.from(detection.descriptor);
   }
-}
+};
 
-window.FaceDetectorEngine = new FaceDetectorEngine();
+// Export to window explicitly
+window.FaceDetectorEngine = FaceDetectorEngine;
