@@ -8,36 +8,38 @@
   --asimov-accent-dark: #0d9488;
   --asimov-accent-light: #2dd4bf;
   --asimov-accent-glow: #5eead4;
-  --asimov-accent-subtle: rgba(20, 184, 166, 0.15);
+  --asimov-accent-subtle: rgba(20, 184, 166, 0.12);
+  --asimov-accent-gradient: linear-gradient(135deg, #2dd4bf 0%, #14b8a6 50%, #0d9488 100%);
+  --asimov-button-gradient: linear-gradient(135deg, #14b8a6 0%, #0891b2 100%);
   
   --asimov-cyan: #06b6d4;
   --asimov-cyan-dark: #0891b2;
   --asimov-cyan-light: #22d3ee;
   --asimov-cyan-glow: #67e8f9;
-  
-  /* Status Colors */
-  --color-success: #10b981;
-  --color-success-glow: rgba(16, 185, 129, 0.35);
-  --color-danger: #ef4444;
-  --color-danger-glow: rgba(239, 68, 68, 0.35);
-  --color-warning: #f59e0b;
-  --color-warning-glow: rgba(245, 158, 11, 0.35);
-  --color-info: #3b82f6;
+  --asimov-cyan-subtle: rgba(6, 182, 212, 0.12);
 
   /* Surfaces & Dark Theme */
   --bg-dark-950: #030712;
-  --bg-dark-900: #0b0f17;
-  --bg-dark-850: #0f172a;
-  --bg-dark-800: #1e293b;
-  --bg-dark-card: rgba(15, 23, 42, 0.75);
-  --bg-glass-card: rgba(15, 23, 42, 0.65);
-  --bg-glass-border: rgba(20, 184, 166, 0.25);
+  --bg-dark-900: #070d18;
+  --bg-dark-850: #0c1524;
+  --bg-dark-800: #132238;
+  --bg-glass-card: rgba(12, 21, 36, 0.72);
+  --bg-glass-subtle: rgba(15, 23, 42, 0.45);
+  --bg-glass-border: rgba(20, 184, 166, 0.22);
   --bg-glass-border-subtle: rgba(255, 255, 255, 0.08);
 
+  /* Status Colors */
+  --color-success: #10b981;
+  --color-success-glow: rgba(16, 185, 129, 0.4);
+  --color-danger: #ef4444;
+  --color-danger-glow: rgba(239, 68, 68, 0.4);
+  --color-warning: #f59e0b;
+  --color-warning-glow: rgba(245, 158, 11, 0.4);
+
   /* Typography */
-  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-  --font-serif: 'Instrument Serif', Georgia, 'Times New Roman', serif;
-  --font-mono: 'JetBrains Mono', 'Fira Code', 'Courier New', monospace;
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-serif: 'Instrument Serif', Georgia, serif;
+  --font-mono: 'JetBrains Mono', monospace;
 
   /* Text Colors */
   --text-primary: #f8fafc;
@@ -45,16 +47,15 @@
   --text-muted: #64748b;
   --text-accent: #2dd4bf;
 
-  /* Shadows & Glows */
-  --glow-primary: 0 0 25px rgba(20, 184, 166, 0.35);
-  --glow-cyan: 0 0 25px rgba(6, 182, 212, 0.35);
-  --glow-danger: 0 0 25px rgba(239, 68, 68, 0.4);
-  --glow-success: 0 0 25px rgba(16, 185, 129, 0.4);
-  --card-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.7);
+  /* Glows & Shadows */
+  --glow-primary: 0 0 25px rgba(20, 184, 166, 0.4);
+  --glow-cyan: 0 0 25px rgba(6, 182, 212, 0.4);
+  --glow-card: 0 20px 40px -15px rgba(0, 0, 0, 0.8), 0 0 25px rgba(20, 184, 166, 0.12);
+  --glow-laser: 0 0 16px rgba(94, 234, 212, 0.9), 0 0 32px rgba(20, 184, 166, 0.6);
 
   /* Radii */
   --radius-sm: 8px;
-  --radius-md: 14px;
-  --radius-lg: 20px;
+  --radius-md: 16px;
+  --radius-lg: 24px;
   --radius-full: 9999px;
 }
