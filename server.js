@@ -41,20 +41,24 @@ app.use((req, res, next) => {
 // Central Error Handler
 app.use(errorHandler);
 
-// Start Server
-const server = app.listen(config.port, () => {
-  console.log(`====================================================`);
-  console.log(`🏥 BioHealth Labs - Sistema de Acesso Biométrico Facial`);
-  console.log(`🌐 Servidor ativo em: http://localhost:${config.port}`);
-  console.log(`🔒 Compliance LGPD Ativo (Art. 11, II, g)`);
-  console.log(`====================================================`);
-});
-
-// Graceful Shutdown
-process.on('SIGTERM', () => {
-  console.log('SIGTERM recebido. Encerrando servidor com segurança...');
-  server.close(() => {
-    console.log('Servidor encerrado.');
-    process.exit(0);
+// Start Server (when run directly)
+if (process.env.NODE_ENV !== 'test' && !process.env.VERCEL) {
+  const server = app.listen(config.port, () => {
+    console.log(`====================================================`);
+    console.log(`🏥 BioHealth Labs - Sistema de Acesso Biométrico Facial`);
+    console.log(`🌐 Servidor ativo em: http://localhost:${config.port}`);
+    console.log(`🔒 Compliance LGPD Ativo (Art. 11, II, g)`);
+    console.log(`====================================================`);
   });
-});
+
+  // Graceful Shutdown
+  process.on('SIGTERM', () => {
+    console.log('SIGTERM recebido. Encerrando servidor com segurança...');
+    server.close(() => {
+      console.log('Servidor encerrado.');
+      process.exit(0);
+    });
+  });
+}
+
+module.exports = app;

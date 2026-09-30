@@ -13,9 +13,9 @@ module.exports = {
     minLivenessScore: 0.75
   },
   paths: {
-    dataDir: path.join(__dirname, '../data'),
-    usersFile: path.join(__dirname, '../data/users.json'),
-    auditLogsFile: path.join(__dirname, '../data/access_logs.json'),
+    dataDir: process.env.VERCEL ? path.join('/tmp', 'data') : path.join(__dirname, '../data'),
+    usersFile: process.env.VERCEL ? path.join('/tmp', 'data', 'users.json') : path.join(__dirname, '../data/users.json'),
+    auditLogsFile: process.env.VERCEL ? path.join('/tmp', 'data', 'access_logs.json') : path.join(__dirname, '../data/access_logs.json'),
     publicDir: path.join(__dirname, '../../public'),
     modelsDir: path.join(__dirname, '../../public/models')
   },
