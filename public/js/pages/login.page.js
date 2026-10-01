@@ -24,17 +24,35 @@ document.addEventListener('DOMContentLoaded', async () => {
   let isLoopRunning = false;
   let enrolledUsers = [];
   let isAuthenticating = false;
-  let authenticatedUser = null;
   let spoofSimulationMode = false;
+
+  // Dual-Layer Resilient Face Detection Helper
+  async function performFaceDetection(videoEl) {
+    if (window.FaceDetectorEngine && typeof window.FaceDetectorEngine.detectSingleFaceWithDescriptor === 'function') {
+      return await window.FaceDetectorEngine.detectSingleFaceWithDescriptor(videoEl);
+    }
+    if (typeof faceapi !== 'undefined' && faceapi.detectSingleFace) {
+      const options = new faceapi.SsdMobilenetv1Options({ minConfidence: 0.5 });
+      return await faceapi.detectSingleFace(videoEl, options).withFaceLandmarks().withFaceDescriptor();
+    }
+    throw new Error('O motor biométrico ainda está inicializando. Aguarde um instante.');
+  }
+
+  function getDescriptorArray(detection) {
+    if (!detection || !detection.descriptor) return null;
+    return Array.from(detection.descriptor);
+  }
 
   async function init() {
     try {
       loadingOverlay.style.display = 'block';
       loadingText.textContent = 'Carregando Modelos Neurais...';
 
-      await FaceDetectorEngine.loadModels((msg) => {
-        loadingText.textContent = msg;
-      });
+      if (window.FaceDetectorEngine && typeof window.FaceDetectorEngine.loadModels === 'function') {
+        await window.FaceDetectorEngine.loadModels((msg) => {
+          loadingText.textContent = msg;
+        });
+      }
 
       loadingText.textContent = 'Sincronizando base de biometria cadastrada...';
       const usersData = await ApiService.getEnrolledUsers();
@@ -64,7 +82,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       if (!isLoopRunning || !camera.isActive || isAuthenticating) return;
 
       try {
-        const detection = await FaceDetectorEngine.detectSingleFaceWithDescriptor(video);
+        const detection = await performFaceDetection(video);
 
         if (detection) {
           // Evaluate Liveness / Anti-Spoofing
@@ -85,7 +103,7 @@ document.addEventListener('DOMContentLoaded', async () => {
           }
 
           // Compute matching
-          const descriptor = FaceDetectorEngine.extractDescriptorArray(detection);
+          const descriptor = getDescriptorArray(detection);
           const match = findLocalBestMatch(descriptor, enrolledUsers);
 
           if (match.matched) {
@@ -124,7 +142,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   // Local helper for quick Euclidean distance calculation
   function findLocalBestMatch(probeDescriptor, users, threshold = 0.52) {
-    if (!users || users.length === 0) return { matched: false, distance: 9.99, confidence: 0 };
+    if (!users || users.length === 0 || !probeDescriptor) return { matched: false, distance: 9.99, confidence: 0 };
 
     let bestUser = null;
     let minDistance = Infinity;
@@ -195,13 +213,13 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
   }
 
-  // Manual Verify Button with strict Anti-Spoofing & Liveness check
+  // Manual Verify Button with strict Anti-Spoofing & Dual-Layer Fallback
   btnManualVerify.addEventListener('click', async () => {
     btnManualVerify.disabled = true;
     btnManualVerify.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span> Validando Prova de Vida...';
 
     try {
-      const detection = await FaceDetectorEngine.detectSingleFaceWithDescriptor(video);
+      const detection = await performFaceDetection(video);
       if (!detection) {
         hud.playErrorSound();
         alert('Nenhum rosto detectado no enquadramento. Posicione-se diante da câmera.');
@@ -219,7 +237,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         return;
       }
 
-      const descriptor = FaceDetectorEngine.extractDescriptorArray(detection);
+      const descriptor = getDescriptorArray(detection);
       await triggerLoginSuccess(descriptor, liveResult.score);
     } catch (err) {
       hud.playErrorSound();

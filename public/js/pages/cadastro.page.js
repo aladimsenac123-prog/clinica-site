@@ -25,15 +25,34 @@ document.addEventListener('DOMContentLoaded', async () => {
   let frameCount = 0;
   let fps = 30;
 
+  // Dual-Layer Resilient Face Detection Helper
+  async function performFaceDetection(videoEl) {
+    if (window.FaceDetectorEngine && typeof window.FaceDetectorEngine.detectSingleFaceWithDescriptor === 'function') {
+      return await window.FaceDetectorEngine.detectSingleFaceWithDescriptor(videoEl);
+    }
+    if (typeof faceapi !== 'undefined' && faceapi.detectSingleFace) {
+      const options = new faceapi.SsdMobilenetv1Options({ minConfidence: 0.5 });
+      return await faceapi.detectSingleFace(videoEl, options).withFaceLandmarks().withFaceDescriptor();
+    }
+    throw new Error('O motor biométrico ainda está inicializando. Aguarde um instante.');
+  }
+
+  function getDescriptorArray(detection) {
+    if (!detection || !detection.descriptor) return null;
+    return Array.from(detection.descriptor);
+  }
+
   // Initialize camera and models
   async function init() {
     try {
       loadingOverlay.style.display = 'block';
       loadingText.textContent = 'Carregando redes neurais face-api...';
 
-      await FaceDetectorEngine.loadModels((msg) => {
-        loadingText.textContent = msg;
-      });
+      if (window.FaceDetectorEngine && typeof window.FaceDetectorEngine.loadModels === 'function') {
+        await window.FaceDetectorEngine.loadModels((msg) => {
+          loadingText.textContent = msg;
+        });
+      }
 
       loadingText.textContent = 'Acessando webcam...';
       await camera.start();
@@ -60,7 +79,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       if (!isLoopRunning || !camera.isActive) return;
 
       try {
-        const detection = await FaceDetectorEngine.detectSingleFaceWithDescriptor(video);
+        const detection = await performFaceDetection(video);
 
         // FPS Calculation
         const now = performance.now();
@@ -99,7 +118,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     btnCapture.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span> Processando Vetor 128D...';
 
     try {
-      const detection = await FaceDetectorEngine.detectSingleFaceWithDescriptor(video);
+      const detection = await performFaceDetection(video);
 
       if (!detection) {
         hud.playErrorSound();
@@ -117,7 +136,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         return;
       }
 
-      currentDescriptor = FaceDetectorEngine.extractDescriptorArray(detection);
+      currentDescriptor = getDescriptorArray(detection);
       hud.playSuccessSound();
       hud.drawBiometricHUD(detection, '✓ BIOMETRIA 128D EXTRAÍDA', 'success');
 
