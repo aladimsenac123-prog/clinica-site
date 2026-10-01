@@ -13,11 +13,29 @@ class StorageService {
     }
 
     if (!fs.existsSync(config.paths.usersFile)) {
-      fs.writeFileSync(config.paths.usersFile, JSON.stringify([], null, 2), 'utf-8');
+      const seedUsers = path.join(__dirname, '../data/users.json');
+      if (process.env.VERCEL && fs.existsSync(seedUsers)) {
+        try {
+          fs.copyFileSync(seedUsers, config.paths.usersFile);
+        } catch (e) {
+          fs.writeFileSync(config.paths.usersFile, JSON.stringify([], null, 2), 'utf-8');
+        }
+      } else {
+        fs.writeFileSync(config.paths.usersFile, JSON.stringify([], null, 2), 'utf-8');
+      }
     }
 
     if (!fs.existsSync(config.paths.auditLogsFile)) {
-      fs.writeFileSync(config.paths.auditLogsFile, JSON.stringify([], null, 2), 'utf-8');
+      const seedLogs = path.join(__dirname, '../data/access_logs.json');
+      if (process.env.VERCEL && fs.existsSync(seedLogs)) {
+        try {
+          fs.copyFileSync(seedLogs, config.paths.auditLogsFile);
+        } catch (e) {
+          fs.writeFileSync(config.paths.auditLogsFile, JSON.stringify([], null, 2), 'utf-8');
+        }
+      } else {
+        fs.writeFileSync(config.paths.auditLogsFile, JSON.stringify([], null, 2), 'utf-8');
+      }
     }
   }
 
