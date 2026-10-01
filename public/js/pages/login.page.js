@@ -195,34 +195,39 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
   }
 
-  // Manual Verify Button
+  // Manual Verify Button with strict Anti-Spoofing & Liveness check
   btnManualVerify.addEventListener('click', async () => {
     btnManualVerify.disabled = true;
-    btnManualVerify.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span> Autenticando...';
+    btnManualVerify.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span> Validando Prova de Vida...';
 
     try {
       const detection = await FaceDetectorEngine.detectSingleFaceWithDescriptor(video);
       if (!detection) {
         hud.playErrorSound();
-        alert('Nenhum rosto detectado no enquadramento.');
-        btnManualVerify.disabled = false;
-        btnManualVerify.innerHTML = '<i class="bi bi-fingerprint"></i> Autenticar Agora';
+        alert('Nenhum rosto detectado no enquadramento. Posicione-se diante da câmera.');
+        resetButton();
         return;
       }
 
-      if (spoofSimulationMode) {
+      // Avaliação real da prova de vida através do módulo de vivacidade
+      const liveResult = liveness.evaluate(detection);
+
+      if (spoofSimulationMode || !liveResult.passed) {
         hud.playErrorSound();
-        alert('❌ ATAQUE DE SPOOFING BLOQUEADO: Prova de vida não aprovada para esta imagem.');
-        btnManualVerify.disabled = false;
-        btnManualVerify.innerHTML = '<i class="bi bi-fingerprint"></i> Autenticar Agora';
+        alert('❌ PROVA DE VIDA REPROVADA: Imagem estática detectada ou piscada não confirmada. Por favor, olhe para a câmera e pisque os olhos.');
+        resetButton();
         return;
       }
 
       const descriptor = FaceDetectorEngine.extractDescriptorArray(detection);
-      await triggerLoginSuccess(descriptor, 0.95);
+      await triggerLoginSuccess(descriptor, liveResult.score);
     } catch (err) {
       hud.playErrorSound();
       alert('Acesso Negado: ' + err.message);
+      resetButton();
+    }
+
+    function resetButton() {
       btnManualVerify.disabled = false;
       btnManualVerify.innerHTML = '<i class="bi bi-fingerprint"></i> Autenticar Agora';
     }

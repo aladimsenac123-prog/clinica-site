@@ -16,26 +16,39 @@ document.addEventListener('DOMContentLoaded', async () => {
   const btnRefreshLogs = document.getElementById('btn-refresh-logs');
   const btnDeleteMyData = document.getElementById('btn-delete-my-data');
 
+  // HTML sanitization helper against XSS
+  function escapeHTML(str) {
+    if (str === null || str === undefined) return '';
+    return String(str)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#039;');
+  }
+
   // Load Session
   const sessionRaw = localStorage.getItem('biohealth_session');
   let session = null;
   if (sessionRaw) {
     try {
       session = JSON.parse(sessionRaw);
-    } catch (e) {}
+    } catch (e) {
+      session = null;
+    }
   }
 
-  if (session && session.user) {
-    userDisplayName.textContent = session.user.name;
-    userDisplayRole.textContent = `${session.user.role} • ${session.user.department}`;
-    userDisplayConfidence.innerHTML = `${session.confidence || 98.5}% <span class="fs-6 text-muted font-sans fw-normal">(128D Match)</span>`;
-    userBadgeTag.textContent = session.user.badgeNumber || 'BIO-AUTH';
-  } else {
-    userDisplayName.textContent = 'Dra. Helena Cavalcanti (Acesso Demonstrativo)';
-    userDisplayRole.textContent = 'Pesquisadora Chefe • Biotecnologia & Genômica';
-    userDisplayConfidence.innerHTML = `99.2% <span class="fs-6 text-muted font-sans fw-normal">(128D Match)</span>`;
-    userBadgeTag.textContent = 'BIO-CHIEF-01';
+  // Enforce authentic session - redirect if unauthorized (Removes demo backdoor)
+  if (!session || !session.token || !session.user) {
+    alert('Acesso restrito. É necessário autenticar-se biometricamente para acessar esta área.');
+    window.location.href = '/login';
+    return;
   }
+
+  userDisplayName.textContent = session.user.name;
+  userDisplayRole.textContent = `${session.user.role} • ${session.user.department}`;
+  userDisplayConfidence.innerHTML = `${session.confidence || 98.5}% <span class="fs-6 text-muted font-sans fw-normal">(128D Match)</span>`;
+  userBadgeTag.textContent = session.user.badgeNumber || 'BIO-AUTH';
 
   // Load Clinical Data
   async function loadClinicalData() {
@@ -51,30 +64,30 @@ document.addEventListener('DOMContentLoaded', async () => {
         <div class="card-glass-subtle p-3">
           <div class="d-flex justify-content-between align-items-start mb-2">
             <div>
-              <span class="badge-status badge-status-biometric mb-1">${trial.phase}</span>
-              <h6 class="text-white fw-bold m-0 fs-5">${trial.title}</h6>
+              <span class="badge-status badge-status-biometric mb-1">${escapeHTML(trial.phase)}</span>
+              <h6 class="text-white fw-bold m-0 fs-5">${escapeHTML(trial.title)}</h6>
             </div>
-            <span class="badge-status badge-status-active">${trial.status}</span>
+            <span class="badge-status badge-status-active">${escapeHTML(trial.status)}</span>
           </div>
 
           <div class="row g-2 my-2 text-secondary small">
-            <div class="col-md-6"><i class="bi bi-person-fill text-accent"></i> <strong>Responsável:</strong> ${trial.leadScientist}</div>
-            <div class="col-md-3"><i class="bi bi-droplet-half text-info"></i> <strong>Amostras:</strong> ${trial.samplesCollected}</div>
-            <div class="col-md-3"><i class="bi bi-graph-up-arrow text-success"></i> <strong>Eficácia:</strong> ${trial.efficacyRate}</div>
+            <div class="col-md-6"><i class="bi bi-person-fill text-accent"></i> <strong>Responsável:</strong> ${escapeHTML(trial.leadScientist)}</div>
+            <div class="col-md-3"><i class="bi bi-droplet-half text-info"></i> <strong>Amostras:</strong> ${escapeHTML(trial.samplesCollected)}</div>
+            <div class="col-md-3"><i class="bi bi-graph-up-arrow text-success"></i> <strong>Eficácia:</strong> ${escapeHTML(trial.efficacyRate)}</div>
           </div>
 
           <div class="p-2 bg-dark bg-opacity-50 border border-secondary border-opacity-25 rounded text-muted small">
-            <i class="bi bi-shield-lock text-warning me-1"></i> ${trial.confidentialityNotice}
+            <i class="bi bi-shield-lock text-warning me-1"></i> ${escapeHTML(trial.confidentialityNotice)}
           </div>
         </div>
       `).join('');
 
     } catch (err) {
-      trialsContainer.innerHTML = `<div class="text-danger p-3">Erro ao carregar dados clínicos: ${err.message}</div>`;
+      trialsContainer.innerHTML = `<div class="text-danger p-3">Erro ao carregar dados clínicos: ${escapeHTML(err.message)}</div>`;
     }
   }
 
-  // Load Audit Logs
+  // Load Audit Logs (with XSS sanitization)
   async function loadAuditLogs() {
     try {
       const data = await ApiService.getAuditLogs();
@@ -101,25 +114,32 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
 
         const dateStr = new Date(log.timestamp).toLocaleTimeString('pt-BR');
+        const safeAction = escapeHTML(log.action);
+        const safeUserName = escapeHTML(log.userName);
+        const safeIp = escapeHTML(log.ip);
+        const safeNotes = escapeHTML(log.notes);
+        const safeLiveness = escapeHTML(log.livenessScore);
+        const safeConfidence = escapeHTML(log.confidence);
+        const safeStatus = escapeHTML(log.status);
 
         return `
           <div class="p-2 card-glass-subtle d-flex align-items-center justify-content-between small">
             <div>
               <div class="text-white fw-semibold">
-                <i class="bi ${icon} me-1"></i> ${log.action} — <span class="text-accent">${log.userName}</span>
+                <i class="bi ${icon} me-1"></i> ${safeAction} — <span class="text-accent">${safeUserName}</span>
               </div>
               <div class="text-muted" style="font-size: 0.75rem;">
-                ${dateStr} • IP: ${log.ip} • Vivacidade: ${log.livenessScore} • Confiança: ${log.confidence}
+                ${dateStr} • IP: ${safeIp} • Vivacidade: ${safeLiveness} • Confiança: ${safeConfidence}
               </div>
-              ${log.notes ? `<div class="text-secondary" style="font-size: 0.75rem;">Nota: ${log.notes}</div>` : ''}
+              ${safeNotes ? `<div class="text-secondary" style="font-size: 0.75rem;">Nota: ${safeNotes}</div>` : ''}
             </div>
-            <span class="badge-status ${badgeClass}" style="font-size: 0.7rem;">${log.status}</span>
+            <span class="badge-status ${badgeClass}" style="font-size: 0.7rem;">${safeStatus}</span>
           </div>
         `;
       }).join('');
 
     } catch (err) {
-      auditLogsContainer.innerHTML = `<div class="text-danger p-2 small">Erro ao carregar logs: ${err.message}</div>`;
+      auditLogsContainer.innerHTML = `<div class="text-danger p-2 small">Erro ao carregar logs: ${escapeHTML(err.message)}</div>`;
     }
   }
 
@@ -135,7 +155,8 @@ document.addEventListener('DOMContentLoaded', async () => {
   // LGPD Right to Erasure
   btnDeleteMyData.addEventListener('click', async () => {
     if (!session || !session.user || !session.user.id) {
-      alert('Esta é uma sessão de demonstração. Cadastre um usuário em /cadastro para testar o direito de exclusão da LGPD.');
+      alert('Sessão inválida. Faça login novamente.');
+      window.location.href = '/login';
       return;
     }
 

@@ -169,13 +169,13 @@ class AuthController {
   }
 
   /**
-   * Get all registered users (for client-side fast matching if needed)
+   * Get all registered users (descriptors omitted for privacy and security)
    * GET /api/v1/auth/users
    */
   async getEnrolledProfiles(req, res, next) {
     try {
       const users = storageService.getUsers();
-      // Return profiles with descriptors
+      // Excluir expressamente o campo descriptor do payload de saída
       res.status(200).json({
         success: true,
         count: users.length,
@@ -185,7 +185,6 @@ class AuthController {
           badgeNumber: u.badgeNumber,
           department: u.department,
           role: u.role,
-          descriptor: u.descriptor,
           registeredAt: u.registeredAt
         }))
       });
@@ -201,6 +200,15 @@ class AuthController {
   async deleteProfile(req, res, next) {
     try {
       const { id } = req.params;
+
+      // Verificação de autorização (LGPD Art. 18): Somente o próprio titular pode solicitar
+      if (req.authUser && req.authUser.id !== id) {
+        return res.status(403).json({
+          success: false,
+          error: 'Violação de Autorização: Você só tem permissão para eliminar os seus próprios dados biométricos.'
+        });
+      }
+
       const users = storageService.getUsers();
       const userIndex = users.findIndex(u => u.id === id);
 
@@ -220,7 +228,7 @@ class AuthController {
         userName: deleted.name,
         badgeNumber: deleted.badgeNumber,
         status: 'GRANTED',
-        notes: 'Exclusão definitiva de biometria solicitada pelo titular (LGPD Art. 18)'
+        notes: 'Exclusão definitiva de biometria executada pelo próprio titular autenticado (LGPD Art. 18)'
       });
 
       res.status(200).json({
