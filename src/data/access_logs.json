@@ -1,1 +1,34 @@
-[]
+[
+  {
+    "id": "AUD-1790878176137-8pikn",
+    "timestamp": "2026-10-01T18:09:36.137Z",
+    "action": "AUTH_SUCCESS",
+    "userId": "USR-1790878125859-3DSR",
+    "userName": "Dr. Arthur Ramos",
+    "badgeNumber": "BIO-7721",
+    "ip": "::1",
+    "userAgent": "Mozilla/5.0 (Windows NT; Windows NT 10.0; pt-BR) WindowsPowerShell/5.1.26100.6899",
+    "confidence": "100%",
+    "distance": 0,
+    "livenessScore": "98%",
+    "status": "GRANTED",
+    "legalBasis": "LGPD Art. 11, II, g (Prevenção à fraude e segurança do titular)",
+    "notes": "Login biométrico validado com distância euclidiana 0 (100% de confiança)"
+  },
+  {
+    "id": "AUD-1790878125859-sboh4",
+    "timestamp": "2026-10-01T18:08:45.859Z",
+    "action": "REGISTER",
+    "userId": "USR-1790878125859-3DSR",
+    "userName": "Dr. Arthur Ramos",
+    "badgeNumber": "BIO-7721",
+    "ip": "::1",
+    "userAgent": "Mozilla/5.0 (Windows NT; Windows NT 10.0; pt-BR) WindowsPowerShell/5.1.26100.6899",
+    "confidence": "100%",
+    "distance": "N/A",
+    "livenessScore": "N/A",
+    "status": "GRANTED",
+    "legalBasis": "LGPD Art. 11, II, g (Prevenção à fraude e segurança do titular)",
+    "notes": "Cadastro biométrico realizado com consentimento LGPD."
+  }
+]
